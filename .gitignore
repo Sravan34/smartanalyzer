@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ResumeMatchService/.vscode
+/ResumeMatchService/Properties/ServiceDependencies
+/ResumeMatchService/Properties/serviceDependencies.ResumematchSer - Web Deploy2.json
+/ResumeMatchService/Properties/serviceDependencies.json

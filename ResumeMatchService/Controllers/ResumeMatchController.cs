@@ -5,28 +5,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ResumeMatchService.Services;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ResumeMatchServices.Models;
+using Microsoft.AspNetCore.Hosting;
+using ResumeMatchService.Models;
 
 namespace ResumeMatchServices.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ResumeMatchController : ControllerBase
     {
         private readonly ResumeService _resumeMatchService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ResumeMatchController()
+        public ResumeMatchController(IWebHostEnvironment webHostEnvironment)
         {
             _resumeMatchService = new ResumeService();
+            _webHostEnvironment = webHostEnvironment;
         }
-        [HttpGet("Search")]
-        public IActionResult GetMatchResult(string docPath, string fileName, string domain, string skill)
+        [HttpGet("SearchAPI")]
+        public IActionResult GetMatchResult(string context,string category,double threshold,int noOfMatches,string inputPath)
         {
-            var result = _resumeMatchService.GetResumeMatchRecords(docPath, fileName,domain,skill);
-            if (result == null)
+            string contentRootPath = _webHostEnvironment.ContentRootPath;
+            if ((category.ToLowerInvariant() == DocType.Job.ToString().ToLowerInvariant())
+             || (category.ToLowerInvariant() == DocType.Resume.ToString().ToLowerInvariant()))
             {
-                return NotFound();
+
+               var  result = _resumeMatchService.GetResumeMatchRecords(context, category, threshold, noOfMatches, inputPath);
+
+                if (result.Count == 0)
+                {
+                    var message = string.Format("No Results Found ");
+                    return NotFound(message);
+
+                }
+
+                return Ok(result);
             }
-            return Ok(result);
+            else
+            {
+
+                return BadRequest("Please check category should be either resume or job!");
+
+            }
         }
     }
 }
